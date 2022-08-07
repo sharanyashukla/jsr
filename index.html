@@ -1,0 +1,263 @@
+<script>
+    function calculateFactor(number) {
+        printRes('factorResult', 'Processing,......');
+        var factors = getFactors(number);
+        printRes('factorResult', factors.join(', '));
+    }
+    function getFactors(number) {
+        var temp = number;
+        var factors = [];
+        for(let i = 1; i <= temp; i++) {
+            for(let j = 2; j <= temp; j++) {
+                if(temp % j === 0) {
+                    factors.push(j);
+                    temp = temp / j;
+                    i = 1;
+                    break;
+                }
+            }
+        }
+        return factors;
+    }
+    function calculateNthRoot(nthRoot, number) {
+        console.log('calculate nthroot '+nthRoot+' of '+number);
+        var factors = getFactors(number).sort();
+        console.log('factors=',factors);
+        var root = [];
+        var fract = [];
+        var temp = 1;
+        var repCount = 0;
+        while(factors.length > 0) {
+            let lastFactor = factors.pop();
+            if(temp !== lastFactor) {
+                temp = lastFactor;
+                repCount = 1;
+            }else {
+                ++repCount;
+            }
+            if(repCount == nthRoot) {
+                fract.pop();
+                root.push(temp);
+                repCount = 0;
+            }else if(repCount == 1) {
+                fract.push(temp);
+            }
+        }
+        console.log('res ='+root+' :: '+fract,factors);
+        let rootRes = root.length > 0 ? root.reduce((ele, res = 1)=> {
+                        return res * ele;
+                        }): 1;
+        let fractRes = fract.length > 0 ? fract.reduce((ele, res = 1)=> {
+                        return res * ele;
+                        }) : 1;
+        fractRes = fractRes > 1 ? (((nthRoot>2) ? ' <sup>'+nthRoot+'</sup>': '') + '&Sqrt;'+fractRes) : '';
+        rootRes = rootRes > 1 ? rootRes : '';
+        printRes('nthRootResult', rootRes+fractRes);
+    }
+    function printTimeTable(start, end, rows) {
+        let res = `<table border="1" cellspacing="2px">`;
+            for(let j = 1; j <= rows; j++) {
+                res += '<tr>';
+                for(let i = start; i <= end; i++) {
+                    if(j == 1)
+                        res += '<th>'+ i*j +'</th>';
+                    else
+                        res += '<td>'+ i*j +'</td>';
+                }
+                res += '</tr>';
+            }
+        res += '</table>';
+        printRes('timesTableResult', res);
+    }
+    function calculateNthPower(nthPower, number) {
+        printRes('nthPowerResult', getPower(nthPower, number));
+    }
+    function getPower(pow, number) {
+        var res = 1;
+        for(var i = 0; i < pow; i++)
+            res = res * number;
+        console.log('**JSR,..'+pow+' :: '+number);
+        return res;
+    }
+    function isPrimeNumber(number) {
+        printRes('isPrimeInputResult', 'Processing,......');
+        var res = checkPrimeNumber(number) ? 'Its a PRIME Number' : 'Its NOT a prime Number.';
+        printRes('isPrimeInputResult', res);
+    }
+    function checkPrimeNumber(number) {
+        for(var i = 2; i < number; i++) {
+            if(number % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    function checkPrimeNumber_withApproach(number, primeNumbers, approach) {
+        let res = true;
+        switch (approach) {
+            case 'with_For_Of':
+                for(let n of primeNumbers) {
+                    if (number % n == 0) {
+                        res = false;
+                        break;
+                    }
+                }
+                break;
+            case 'with_EVERY':
+                for(let n of primeNumbers) {
+                    if (number % n == 0) {
+                        res = false;
+                        break;
+                    }
+                }
+                break;
+            default :
+                res = checkPrimeNumber(number);
+        }
+        // console.log('**JSR,....'+number+ ' :: '+primeNumbers+' :: '+res);
+        return res;
+    }
+
+    function listPrimeNumbers(number, approach) {
+        printRes('listPrimeNumbersResult', 'Processing,......');
+        printRes('listPrimeNumbersCountResult', '');
+        const start = new Date();
+        setTimeout(() => {
+            var i = 2;
+            var res = [];
+            while(i <= number) {
+                let checkPrimeRes = checkPrimeNumber_withApproach(i, res, approach);;
+                // if(approach == 'withPrimeList') {
+                //     checkPrimeRes = checkPrimeNumber_withPrimeList(i, res);
+                // }
+                // else {
+                //     checkPrimeRes = checkPrimeNumber(i);
+                // }
+                if(checkPrimeRes) {
+                    res.push(i);
+                }
+                i++;
+            }
+            const end = new Date();
+            const diff = (end - start)/ 1000;
+            printRes('listPrimeNumbersCountResult', `Total ${res.length} prime numbers found in ${diff} Sec. using approch ${approach}`);
+            printRes('listPrimeNumbersResult', res.join(', '));
+        }, 10);
+    }
+    function getFactorial(number) {
+        let res = 1;
+        let i = number;
+        while(i > 1) {
+            res *= i;
+            i--;
+        }
+        printRes('factorialInputResult', res);
+        return res;
+    }
+    function printRes(id, res) {
+        document.getElementById(id).style.color = 'red';
+        document.getElementById(id).innerHTML = res;
+    }
+
+</script>
+<body>
+<h1>Find Factors</h1>
+<div>
+    <div>Enter Number:: </div>
+    <div>
+        <input type="number" id="factorInput"/>
+        <input type="button" onclick="calculateFactor(document.getElementById('factorInput').value)" value="calculateFactor"/>
+    </div>
+    <div style="width: 100%">
+        <strong>Result:</strong>
+        <span id="factorResult"></span>
+    </div>
+</div>
+<hr>
+<h1>Find Nth root</h1>
+<div>
+    <div>Nth Root:: </div>
+    <div>
+        <input type="number" id="nthRoot" min="2" value="2"/> of
+        <input type="number" id="nthRootNumber"/>
+        <input type="button" onclick="calculateNthRoot(document.getElementById('nthRoot').value,document.getElementById('nthRootNumber').value)" value="calculate Nth Root"/>
+    </div>
+    <div style="width: 100%">
+        <strong>Result:</strong>
+        <span id="nthRootResult"></span>
+    </div>
+</div>
+<hr>
+<h1>Find Nth power</h1>
+<div>
+    <div>Nth Power:: </div>
+    <div>
+        <input type="number" id="nthPower" min="2" value="2"/> of
+        <input type="number" id="nthPowerNumber"/>
+        <input type="button" onclick="calculateNthPower(document.getElementById('nthPower').value,document.getElementById('nthPowerNumber').value)" value="calculate Nth Power"/>
+    </div>
+    <div style="width: 100%">
+        <strong>Result:</strong>
+        <span id="nthPowerResult"></span>
+    </div>
+</div>
+<hr>
+<h1>Is Prime Number</h1>
+<div>
+    <div>Enter Number:: </div>
+    <div>
+        <input type="number" id="isPrimeInput"/>
+        <input type="button" onclick="isPrimeNumber(document.getElementById('isPrimeInput').value)" value="Is Prime?"/>
+    </div>
+    <div style="width: 100%">
+        <strong>Result:</strong>
+        <span id="isPrimeInputResult"></span>
+    </div>
+</div>
+<hr>
+<h1>Print Factorial</h1>
+<div>
+    <div>Enter Number:: </div>
+    <div>
+        <input type="number" id="factorialInput" min="2" value="2"/>
+        <input type="button" onclick="getFactorial(document.getElementById('factorialInput').value)" value="Get Factorial"/>
+    </div>
+    <div style="width: 100%">
+        <strong>Result:</strong>
+        <span id="factorialInputResult"></span>
+    </div>
+</div>
+<hr>
+<h1>Print times tables:</h1>
+<div>
+    <div>Start from:: </div>
+    <div>
+        <input type="number" id="tblStart" min="2" value="2"/> to
+        <input type="number" id="tblEnd" min="3" value="3"/> Rows
+        <input type="number" id="tblRows" min="10" value="10"/>
+        <input type="button" onclick="printTimeTable(document.getElementById('tblStart').value, document.getElementById('tblEnd').value, document.getElementById('tblRows').value)" value="Print Table"/>
+    </div>
+    <div style="width: 100%">
+        <strong>Result:</strong><br>
+        <span id="timesTableResult"></span>
+    </div>
+</div>
+<hr>
+<h1>List Prime Numbers under:</h1>
+<div>
+    <div>Enter Number:: </div>
+    <div>
+        <input type="number" id="listPrimeNumbersInput"/>
+        <input type="button" onclick="listPrimeNumbers(document.getElementById('listPrimeNumbersInput').value)" value="List Prime Plain"/>
+        <input type="button" onclick="listPrimeNumbers(document.getElementById('listPrimeNumbersInput').value, 'with_For_Of')" value="List Prime Use For_of"/>
+        <input type="button" onclick="listPrimeNumbers(document.getElementById('listPrimeNumbersInput').value, 'with_EVERY')" value="List Prime Use Every"/>
+    </div>
+    <div style="width: 100%">
+        <strong>Prime Numbers count:</strong>
+        <span id="listPrimeNumbersCountResult"></span>
+        <br>
+        <strong>Result:</strong>
+        <span id="listPrimeNumbersResult" style="display:block; width: 100%; height: 400px; overflow: auto;"></span>
+    </div>
+</div>
+</body>
